@@ -1,14 +1,17 @@
 package com.example.config;
 
-import com.example.handler.MyAuthenticationFailuerHandler;
-import com.example.handler.MyAuthenticationSuccessHandler;
+import com.example.config.security.handler.MyAuthenticationFailuerHandler;
+import com.example.config.security.handler.MyAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import javax.annotation.Resource;
 
 /**
  * @Author changxizhao
@@ -18,11 +21,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    @Resource
     private MyAuthenticationSuccessHandler successHandler;
 
-    @Autowired
+    @Resource
     private MyAuthenticationFailuerHandler failuerHandler;
+
+    @Qualifier("userDetailServiceImpl")
+    @Autowired
+    private UserDetailsService myUserDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -53,16 +60,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("user")
-                .password(bCryptPasswordEncoder().encode("123456"))
-                .roles("user")
-                .and()
-                .withUser("admin")
-                .password(bCryptPasswordEncoder().encode("123456"))
-                .roles("admin")
-                .and()
-                .passwordEncoder(bCryptPasswordEncoder());
+        auth.userDetailsService(myUserDetailsService).passwordEncoder(bCryptPasswordEncoder());
+//        auth.inMemoryAuthentication()
+//                .withUser("user")
+//                .password(bCryptPasswordEncoder().encode("123456"))
+//                .roles("user")
+//                .and()
+//                .withUser("admin")
+//                .password(bCryptPasswordEncoder().encode("123456"))
+//                .roles("admin")
+//                .and()
+//                .passwordEncoder(bCryptPasswordEncoder());
     }
 
     public BCryptPasswordEncoder bCryptPasswordEncoder() {

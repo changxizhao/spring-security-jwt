@@ -1,4 +1,4 @@
-package com.example.handler;
+package com.example.config.security.handler;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -21,6 +21,7 @@ public class MyAuthenticationFailuerHandler implements AuthenticationFailureHand
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         httpServletResponse.setContentType("application/json;charset=UTF-8");
         PrintWriter out = httpServletResponse.getWriter();
+        System.out.println("登录失败");
         out.write("{\"code\":400,\"msg\":\"登录失败\"}");
     }
 }
